@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Omega Console</title>
+    <style>
+        body { background-color: #000; color: #00ff00; font-family: monospace; margin: 0; padding: 8px; font-size: 14px; }
+        h2 { color: #ff003c; border-bottom: 1px solid #00ff00; margin-top: 0; padding-bottom: 5px; font-size: 16px; }
+        .section { margin-bottom: 15px; }
+        input[type="text"] { width: 90%; background: #111; color: #00ff00; border: 1px solid #333; padding: 8px; margin-bottom: 5px; font-family: monospace; }
+        button { background: #222; color: #00ff00; border: 1px solid #00ff00; padding: 10px; width: 100%; margin-bottom: 5px; font-family: monospace; font-weight: bold; text-align: left; }
+        button:focus, button:active { background: #ff003c; color: #000; }
+        #terminal-log { color: #00ffff; font-size: 12px; border-top: 1px dashed #00ff00; padding-top: 5px; min-height: 50px; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h2>⌁Ω OMEGA CONSOLE</h2>
+    <div class="section">
+        <button onclick="fireWebhook('alert')">⚡ TRIGGER: ALARM DAEMON</button>
+        <button onclick="fireWebhook('reboot')">💀 TRIGGER: REBOOT RIG</button>
+    </div>
+    <div class="section">
+        <input type="text" id="b64-input" placeholder="Enter text...">
+        <button onclick="processB64('encode')">✦ B64 ENCODE</button>
+        <button onclick="processB64('decode')">✦ B64 DECODE</button>
+    </div>
+    <div id="terminal-log">╚══❖ CHEVRON 7 LOCKED<br>SYSTEM STANDBY...</div>
+    <script>
+        const logWindow = document.getElementById('terminal-log');
+        function log(msg) { logWindow.innerHTML = `> ${msg}`; }
+        function fireWebhook(action) {
+            log(`FIRING ACTION: ${action}...`);
+            fetch(`https://httpbin.org/get?action=${action}`)
+                .then(r => r.ok ? log(`✅ PAYLOAD DELIVERED: ${action}`) : log(`❌ TARGET REJECTED`))
+                .catch(e => log(`❌ NETWORK DROP`));
+        }
+        function processB64(mode) {
+            const input = document.getElementById('b64-input').value;
+            if (!input) return log("⚠️ ERROR: INPUT EMPTY");
+            try {
+                log(mode === 'encode' ? `ENCODED:<br>${btoa(input)}` : `DECODED:<br>${atob(input)}`);
+            } catch (e) { log("💀 ERROR: INVALID BASE64"); }
+        }
+    </script>
+</body>
+</html>
